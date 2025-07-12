@@ -1,0 +1,90 @@
+.eatery-form-container {
+  padding: 20px;
+  max-width: 700px;
+  margin: auto;
+}
+
+.eatery-form {
+  background: #fff;
+  padding: 32px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.eatery-form h2 {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+label {
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+input[type="text"],
+input[type="number"],
+textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.inline-fields {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.inline-fields > div {
+  flex: 1;
+  min-width: 130px;
+}
+
+.cuisine-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tag {
+  padding: 6px 12px;
+  background: #f1f1f1;
+  border-radius: 20px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.tag.selected {
+  background-color: #1d4ed8;
+  color: white;
+}
+
+.primary-btn {
+  padding: 12px;
+  background-color: #1d4ed8;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+.primary-btn:hover {
+  background-color: #2563eb;
+}
+
+@media (max-width: 600px) {
+  .inline-fields {
+    flex-direction: column;
+  }
+}

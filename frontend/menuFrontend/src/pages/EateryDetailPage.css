@@ -1,0 +1,55 @@
+.eatery-detail-container {
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+}
+
+.back-btn {
+  margin-bottom: 20px;
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: #2563eb;
+}
+
+.eatery-cover img {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.eatery-info h2 {
+  margin-bottom: 8px;
+}
+
+.location {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.desc {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+.menu-section h3 {
+  margin-bottom: 10px;
+}
+
+.menu-text {
+  font-size: 16px;
+  background: #f9f9f9;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.menu-img {
+  max-width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}

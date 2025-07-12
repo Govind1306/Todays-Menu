@@ -1,0 +1,18 @@
+.restaurant-wrapper {
+  /* padding: 2rem 1rem; */
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.restaurant-grid {
+  display: grid;
+  gap: 2rem;
+  width: 100%;
+  max-width: 1200px;
+
+  /* 👇 force wider minimums to prevent 4 columns on small screens */
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}

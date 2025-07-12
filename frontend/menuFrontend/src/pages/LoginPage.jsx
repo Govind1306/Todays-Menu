@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./LoginPage.css";
 import { GoogleLogin } from "@react-oauth/google";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
@@ -12,6 +13,8 @@ const LoginPage = () => {
     remember: false,
   });
 
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData({ ...formData, [name]: type === "checkbox" ? checked : value });
@@ -20,6 +23,7 @@ const LoginPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log(`${isSignup ? "Sign Up" : "Log In"} with`, formData);
+    navigate(formData.remember ? "welcome" : "/eateries"); // Redirect to eateries page after login/signup
   };
 
   const toggleMode = () => {
