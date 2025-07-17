@@ -14,10 +14,10 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<LoginPage />} />
-          <Route path="/eateries" element={<UserDashboard />} />
           <Route path="/welcome" element={<WelcomePage />} />
           <Route path="/register-eatery" element={<RegisterEateryForm />} />
           <Route path="/owner-dashboard" element={<OwnerDashboard />} />
+          <Route path="/eateries" element={<UserDashboard />} />
           <Route path="/eatery/:id" element={<EateryDetailPage />} />
         </Routes>
       </BrowserRouter>

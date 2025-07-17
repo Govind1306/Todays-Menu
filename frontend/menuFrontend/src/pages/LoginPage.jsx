@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import "./LoginPage.css";
 import { GoogleLogin } from "@react-oauth/google";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { supabase } from "../supabaseClient";
 
 const LoginPage = () => {
-  const [isSignup, setIsSignup] = useState(false);
+  const [isSignup, setIsSignup] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -20,10 +21,58 @@ const LoginPage = () => {
     setFormData({ ...formData, [name]: type === "checkbox" ? checked : value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(`${isSignup ? "Sign Up" : "Log In"} with`, formData);
-    navigate(formData.remember ? "welcome" : "/eateries"); // Redirect to eateries page after login/signup
+    const { email, password } = formData;
+
+    if (isSignup) {
+      const { data: signUpData, error: signUpError } =
+        await supabase.auth.signUp({
+          email,
+          password,
+        });
+
+      if (signUpError) {
+        alert("Signup failed: " + signUpError.message);
+      } else {
+        console.log("Signup successful:", signUpData);
+
+        const user = signUpData.user;
+
+        // ✅ Insert into custom users table
+        if (user) {
+          const { error: insertError } = await supabase
+            .from("users")
+            .insert([
+              {
+                id: user.id, // Supabase UUID
+                email: email,
+                full_name: "", // optional - you can extend UI to ask this
+                phone: "", // optional - add input field in UI if needed
+                is_owner: false, // default false, or change if needed
+              },
+            ])
+            .select();
+
+          if (insertError) {
+            console.log("Error inserting user data:", insertError);
+            // console.error("Error inserting user data:", insertError.message);
+          }
+        }
+        setIsSignup(false);
+      }
+    } else {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        alert("Login failed: " + error.message);
+      } else {
+        navigate(formData.remember ? "welcome" : "/eateries");
+      }
+    }
   };
 
   const toggleMode = () => {
@@ -115,4 +164,3 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
-// Note: Replace "YOUR_GOOGLE_CLIENT_ID" with your actual Google OAuth client ID.
