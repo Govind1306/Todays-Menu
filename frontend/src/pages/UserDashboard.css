@@ -1,0 +1,21 @@
+.user-dashboard {
+  padding: 2rem;
+  background: linear-gradient(120deg, #c8cbff, #752fb2);
+}
+
+.dashboard-heading {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #000000;
+  font-weight: 600;
+  text-align: center;
+}
+
+.eateries-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 1rem;
+  padding-top: 1rem;
+  align-items: center;
+  justify-items: center;
+}

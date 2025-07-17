@@ -1,0 +1,58 @@
+.restaurant-card {
+  width: 100%;
+  max-width: 350px;
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  margin: 1rem;
+}
+
+.restaurant-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.12);
+}
+
+.restaurant-image-wrapper {
+  position: relative;
+}
+
+.restaurant-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+}
+
+.badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background-color: #ff4d4f;
+  color: white;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 12px;
+}
+
+.restaurant-details {
+  padding: 1rem;
+}
+
+.restaurant-name {
+  margin: 0 0 0.5rem;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #222;
+}
+
+.restaurant-type,
+.restaurant-address,
+.restaurant-rating {
+  font-size: 0.95rem;
+  color: #555;
+  margin: 0.25rem 0;
+}

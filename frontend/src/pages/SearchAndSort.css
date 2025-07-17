@@ -1,0 +1,19 @@
+.user-dashboard {
+  padding: 2rem;
+  background-color: #fdfdfd;
+}
+
+.dashboard-heading {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #222;
+  font-weight: 600;
+  text-align: center;
+}
+
+.eateries-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 1.5rem;
+  padding-top: 1rem;
+}
