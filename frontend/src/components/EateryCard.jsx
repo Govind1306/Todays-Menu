@@ -1,12 +1,16 @@
 import React from "react";
 import "./EateryCard.css";
+import { useNavigate } from "react-router-dom";
 
 const EateryCard = ({ restaurant }) => {
   const { name, image, type, address, rating } = restaurant;
 
+  const navigate = useNavigate();
+
   const handleClick = () => {
     // You can replace this with navigation logic
     console.log("Clicked:", name);
+    navigate("/eateries/" + restaurant.id);
   };
 
   return (

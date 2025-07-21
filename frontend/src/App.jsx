@@ -6,7 +6,10 @@ import RegisterEateryForm from "./pages/RegisterEateryForm";
 import WelcomePage from "./pages/WelcomePage";
 import OwnerDashboard from "./pages/OwnerDashboard";
 import EateryDetailPage from "./pages/EateryDetailPage";
+import EateryPage from "./pages/EateryPage";
+import HomePage from "./pages/HomePage";
 // import RegisterEateryForm from "./pages/RegisterEateryForm";
+import "./App.css"; // Ensure Tailwind CSS is imported
 
 export default function App() {
   return (
@@ -18,7 +21,8 @@ export default function App() {
           <Route path="/register-eatery" element={<RegisterEateryForm />} />
           <Route path="/owner-dashboard" element={<OwnerDashboard />} />
           <Route path="/eateries" element={<UserDashboard />} />
-          <Route path="/eatery/:id" element={<EateryDetailPage />} />
+          <Route path="/eateries/:id" element={<EateryPage />} />
+          <Route path="/Home" element={<HomePage />} />
         </Routes>
       </BrowserRouter>
     </>
