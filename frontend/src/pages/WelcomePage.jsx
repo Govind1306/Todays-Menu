@@ -1,100 +1,182 @@
-import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import React, { useEffect, useState } from "react";
+import { User, Store, Eye, Star, MessageCircle } from "lucide-react";
+import { supabase } from "../supabaseClient"; // adjust path if needed
 
-const OwnerDashboard = () => {
+const Dashboard = () => {
+  const [userId, setUserId] = useState(null);
+  const [userName, setUserName] = useState("");
   const [profileComplete, setProfileComplete] = useState(false);
-  const [hasEatery, setHasEatery] = useState(false);
+  const [businessRegistered, setBusinessRegistered] = useState(false);
+  const [messes, setMesses] = useState([]);
+
+  // Fetch user ID
+  useEffect(() => {
+    const getUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (user) setUserId(user.id);
+    };
+    getUser();
+  }, []);
+
+  // Fetch profile and messes
+  useEffect(() => {
+    if (!userId) return;
+
+    const fetchData = async () => {
+      // Fetch owner profile
+      const { data: owner } = await supabase
+        .from("owners")
+        .select("*")
+        .eq("id", userId)
+        .single();
+
+      if (owner) {
+        setUserName(owner.name || "Owner");
+        setProfileComplete(!!(owner.name && owner.phone && owner.city)); // adjust fields as per your schema
+      }
+
+      // Fetch messes
+      const { data: messData } = await supabase
+        .from("eateries")
+        .select("*")
+        .eq("created_by", userId);
+
+      if (messData) {
+        setBusinessRegistered(messData.length > 0);
+        setMesses(
+          messData.map((mess) => ({
+            id: mess.id,
+            name: mess.name,
+            features: [
+              {
+                icon: <User className="w-4 h-4" />,
+                text: "Manage menu and profile",
+              },
+              {
+                icon: <Eye className="w-4 h-4" />,
+                text: "Track views and ratings",
+              },
+              {
+                icon: <MessageCircle className="w-4 h-4" />,
+                text: "Interact with customers",
+              },
+            ],
+          }))
+        );
+      }
+    };
+
+    fetchData();
+  }, [userId]);
 
   return (
-    <div className="min-h-screen p-4 bg-gray-100 flex flex-col items-center justify-center">
-      <Card className="w-full max-w-4xl shadow-md">
-        <CardHeader>
-          <CardTitle className="text-center text-2xl font-bold">
-            Owner Dashboard
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {!profileComplete ? (
-            <div className="space-y-6">
-              <h2 className="text-xl font-semibold">Complete Your Profile</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="name">Full Name</Label>
-                  <Input id="name" placeholder="John Doe" />
-                </div>
-                <div>
-                  <Label htmlFor="email">Email</Label>
-                  <Input id="email" placeholder="john@example.com" />
-                </div>
-                <div>
-                  <Label htmlFor="phone">Phone</Label>
-                  <Input id="phone" placeholder="9876543210" />
-                </div>
-                <div>
-                  <Label htmlFor="location">Location</Label>
-                  <Input id="location" placeholder="City, State" />
-                </div>
-              </div>
-              <Button
-                onClick={() => setProfileComplete(true)}
-                className="w-full"
-              >
-                Submit Profile
-              </Button>
+    <div className="min-h-screen bg-gray-900 text-white p-6">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <h1 className="text-3xl font-bold mb-8">Welcome, {userName}</h1>
+
+        {/* Action Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          {/* Complete Profile Card */}
+          <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+            <div className="flex items-center justify-center w-12 h-12 bg-gray-700 rounded-full mb-4">
+              <User className="w-6 h-6 text-gray-300" />
             </div>
-          ) : hasEatery ? (
-            <Tabs defaultValue="dashboard">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="dashboard">Eatery Dashboard</TabsTrigger>
-                <TabsTrigger value="profile">Profile</TabsTrigger>
-              </TabsList>
-              <TabsContent value="dashboard">
-                <h2 className="text-xl font-semibold">Eatery Overview</h2>
-                <p className="text-muted-foreground mt-2">
-                  Track orders, update menu, manage reviews.
-                </p>
-              </TabsContent>
-              <TabsContent value="profile">
-                <h2 className="text-xl font-semibold">Owner Info</h2>
-                <p className="text-muted-foreground mt-2">
-                  You can update your profile details here.
-                </p>
-              </TabsContent>
-            </Tabs>
-          ) : (
-            <div className="space-y-6">
-              <h2 className="text-xl font-semibold">Register Your Business</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="eateryName">Eatery Name</Label>
-                  <Input id="eateryName" placeholder="Spicy Bites" />
-                </div>
-                <div>
-                  <Label htmlFor="address">Address</Label>
-                  <Input id="address" placeholder="123 Main St" />
-                </div>
-                <div>
-                  <Label htmlFor="cuisine">Cuisine Type</Label>
-                  <Input id="cuisine" placeholder="Indian, Chinese" />
-                </div>
-                <div>
-                  <Label htmlFor="timings">Timings</Label>
-                  <Input id="timings" placeholder="10:00 AM - 10:00 PM" />
-                </div>
-              </div>
-              <Button onClick={() => setHasEatery(true)} className="w-full">
-                Register Eatery
-              </Button>
+            <h2 className="text-xl font-semibold mb-2">
+              Complete Your Profile
+            </h2>
+            <p className="text-gray-400 mb-4">
+              Finish setting up your mess owner profile
+            </p>
+            <button
+              className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                profileComplete
+                  ? "bg-green-600 hover:bg-green-700 text-white"
+                  : "bg-blue-600 hover:bg-blue-700 text-white"
+              }`}
+            >
+              {profileComplete ? "✓ Profile Complete" : "Complete Profile"}
+            </button>
+          </div>
+
+          {/* Register Business Card */}
+          <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+            <div className="flex items-center justify-center w-12 h-12 bg-gray-700 rounded-full mb-4">
+              <Store className="w-6 h-6 text-gray-300" />
             </div>
-          )}
-        </CardContent>
-      </Card>
+            <h2 className="text-xl font-semibold mb-2">
+              Register Your Business
+            </h2>
+            <p className="text-gray-400 mb-4">
+              Add your mess to FoodFindr directory
+            </p>
+            <button
+              className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                businessRegistered
+                  ? "bg-green-600 hover:bg-green-700 text-white"
+                  : "bg-blue-600 hover:bg-blue-700 text-white"
+              }`}
+            >
+              {businessRegistered ? "✓ Business Registered" : "Register Mess"}
+            </button>
+          </div>
+        </div>
+
+        {/* Your Messes Section */}
+        {messes.length > 0 && (
+          <div>
+            <h2 className="text-2xl font-bold mb-6">Your Messes</h2>
+            <div className="space-y-4">
+              {messes.map((mess) => (
+                <div
+                  key={mess.id}
+                  className="bg-gray-800 rounded-lg p-6 border border-gray-700"
+                >
+                  <div className="flex justify-between items-start mb-4">
+                    <h3 className="text-xl font-semibold">{mess.name}</h3>
+                    <button className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md font-medium transition-colors">
+                      View Dashboard
+                    </button>
+                  </div>
+
+                  {/* Features List */}
+                  <ul className="space-y-2">
+                    {mess.features.map((feature, index) => (
+                      <li
+                        key={index}
+                        className="flex items-center text-gray-300"
+                      >
+                        <span className="mr-3 text-blue-400">
+                          {feature.icon}
+                        </span>
+                        {feature.text}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {messes.length === 0 && (
+          <div className="bg-gray-800 rounded-lg p-8 border border-gray-700 text-center">
+            <Store className="w-16 h-16 text-gray-500 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold mb-2">No Messes Registered</h3>
+            <p className="text-gray-400 mb-4">
+              Start by registering your first mess to get started with FoodFindr
+            </p>
+            <button className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-md font-medium transition-colors">
+              Register Your First Mess
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
 
-export default OwnerDashboard;
+export default Dashboard;
