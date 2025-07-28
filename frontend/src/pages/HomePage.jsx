@@ -17,7 +17,8 @@ export default function HomePage() {
       <div className="grid md:grid-cols-2 gap-6 md:gap-8 w-full max-w-5xl">
         {/* Customer */}
         <div
-          onClick={() => navigate("/login?role=user")}
+          // onClick={() => navigate("/login?role=user")}
+          onClick={() => navigate("/signIn")}
           className="cursor-pointer bg-gray-800 hover:bg-gray-750 transition p-8 rounded-xl shadow-lg border border-gray-700"
         >
           <div className="flex justify-center mb-6">
@@ -49,7 +50,7 @@ export default function HomePage() {
 
         {/* Owner */}
         <div
-          onClick={() => navigate("/login?role=owner")}
+          onClick={() => navigate("/signIn")}
           className="cursor-pointer bg-gray-800 hover:bg-gray-750 transition p-8 rounded-xl shadow-lg border border-gray-700"
         >
           <div className="flex justify-center mb-6">

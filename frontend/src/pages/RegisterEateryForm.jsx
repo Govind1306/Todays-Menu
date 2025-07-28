@@ -96,7 +96,7 @@ const RegisterEateryForm = () => {
         pincode: formData.pincode.toString(),
         cuisine: formData.cuisine,
         location: formData.location,
-        created_by: userId,
+        owner_id: userId,
       },
     ]);
 

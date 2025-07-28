@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { User, Store, Eye, Star, MessageCircle } from "lucide-react";
 import { supabase } from "../supabaseClient"; // adjust path if needed
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const [userId, setUserId] = useState(null);
@@ -20,6 +21,8 @@ const Dashboard = () => {
     getUser();
   }, []);
 
+  const navigate = useNavigate();
+
   // Fetch profile and messes
   useEffect(() => {
     if (!userId) return;
@@ -27,13 +30,18 @@ const Dashboard = () => {
     const fetchData = async () => {
       // Fetch owner profile
       const { data: owner } = await supabase
-        .from("owners")
+        .from("users")
         .select("*")
         .eq("id", userId)
         .single();
 
+      console.log(owner, "owner data");
+
       if (owner) {
-        setUserName(owner.name || "Owner");
+        console.log(owner);
+        console.log("test");
+
+        setUserName(owner.full_name || "Owner");
         setProfileComplete(!!(owner.name && owner.phone && owner.city)); // adjust fields as per your schema
       }
 
@@ -41,7 +49,7 @@ const Dashboard = () => {
       const { data: messData } = await supabase
         .from("eateries")
         .select("*")
-        .eq("created_by", userId);
+        .eq("owner_id", userId);
 
       if (messData) {
         setBusinessRegistered(messData.length > 0);
@@ -112,15 +120,35 @@ const Dashboard = () => {
             <p className="text-gray-400 mb-4">
               Add your mess to FoodFindr directory
             </p>
-            <button
-              className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                businessRegistered
-                  ? "bg-green-600 hover:bg-green-700 text-white"
-                  : "bg-blue-600 hover:bg-blue-700 text-white"
-              }`}
+            <div
+              style={{
+                border: "none",
+                display: "flex",
+                flexDirection: "row",
+                gap: "10px",
+              }}
             >
-              {businessRegistered ? "✓ Business Registered" : "Register Mess"}
-            </button>
+              <button
+                className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                  businessRegistered
+                    ? "bg-green-600 hover:bg-green-700 text-white"
+                    : "bg-blue-600 hover:bg-blue-700 text-white"
+                }`}
+                onClick={() =>
+                  !businessRegistered && navigate("/register-eatery")
+                } // Adjust the navigation logic as needed
+              >
+                {businessRegistered ? "Business Registered" : "Register Mess"}
+              </button>
+              {businessRegistered && (
+                <button
+                  className={`px-4 py-2 rounded-md font-medium transition-colors ${"bg-blue-600 hover:bg-blue-700 text-white"}`}
+                  onClick={() => navigate("/register-eatery")} // Adjust the navigation logic as needed
+                >
+                  Register another Mess
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -136,7 +164,10 @@ const Dashboard = () => {
                 >
                   <div className="flex justify-between items-start mb-4">
                     <h3 className="text-xl font-semibold">{mess.name}</h3>
-                    <button className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md font-medium transition-colors">
+                    <button
+                      className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md font-medium transition-colors"
+                      onClick={() => navigate(`/eatery-dashboard/${mess.id}`)}
+                    >
                       View Dashboard
                     </button>
                   </div>
