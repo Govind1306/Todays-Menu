@@ -22,7 +22,7 @@ const UserDashboard = () => {
   const [userId, setUserId] = useState(null);
   const [showOnlyWishlisted, setShowOnlyWishlisted] = useState(false);
   const [location, setLocation] = useState(null);
-  const [distanceFilter, setDistanceFilter] = useState(1);
+  const [distanceFilter, setDistanceFilter] = useState(1000000);
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
@@ -57,9 +57,15 @@ const UserDashboard = () => {
 
   useEffect(() => {
     const fetchEateries = async () => {
-      const { data, error } = await supabase.from("eateries").select("*");
-      if (!error) setEateries(data || []);
-      else console.error("Error fetching eateries:", error);
+      // Call the database function using rpc
+      const { data, error } = await supabase.rpc(
+        "get_eateries_with_geojson_location"
+      );
+      if (!error) {
+        setEateries(data || []);
+      } else {
+        console.error("Error fetching eateries:", error);
+      }
     };
     fetchEateries();
   }, []);
@@ -67,7 +73,8 @@ const UserDashboard = () => {
   const enhancedEateries = useMemo(() => {
     return eateries.map((eatery) => {
       let distance = null;
-      if (location && eatery.latitude && eatery.longitude) {
+      // Now, eatery already has 'latitude' and 'longitude' because of the RPC function
+      if (location && eatery.latitude !== null && eatery.longitude !== null) {
         distance = haversineDistance(
           location.latitude,
           location.longitude,
@@ -83,6 +90,7 @@ const UserDashboard = () => {
     .filter((e) => e.name.toLowerCase().includes(searchTerm.toLowerCase()))
     .filter((e) => (showOnlyWishlisted ? userWishlist.includes(e.id) : true))
     .filter((e) => {
+      // Ensure eatery.distance is not null before applying filter
       if (!location || e.distance == null) return true;
       return e.distance <= distanceFilter;
     })

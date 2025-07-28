@@ -104,7 +104,7 @@ const RegisterEateryForm = () => {
       toast.error("Error: " + error.message);
     } else {
       toast.success("Eatery registered successfully!");
-      setTimeout(() => navigate("/eateries"), 2000);
+      setTimeout(() => navigate("/welcome"), 2000);
     }
   };
 
