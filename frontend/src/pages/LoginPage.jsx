@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { supabase } from "../supabaseClient";
+import { jwtDecode } from "jwt-decode";
 
 const LoginPage = () => {
   const [isSignup, setIsSignup] = useState(true);
@@ -262,7 +263,81 @@ const LoginPage = () => {
           <div className="my-6 text-center text-gray-400">or</div>
 
           <div className="flex justify-center mb-6">
-            <GoogleLogin onSuccess={() => {}} onError={() => {}} />
+            <GoogleLogin
+              onSuccess={async (credentialResponse) => {
+                try {
+                  const { credential } = credentialResponse;
+                  if (!credential) return alert("No credential received");
+
+                  const decoded = jwtDecode(credential); // get email, name etc.
+                  console.log("Decoded Google Token:", decoded);
+
+                  const { data: signInData, error: signInError } =
+                    await supabase.auth.signInWithIdToken({
+                      provider: "google",
+                      token: credential,
+                    });
+
+                  if (signInError) {
+                    console.error("Supabase login error:", signInError.message);
+                    return alert("Login failed");
+                  }
+
+                  const user = signInData.user;
+                  if (!user) return alert("No user returned from Supabase");
+
+                  // 👇 Check if user exists in 'users' table
+                  const { data: existingUsers, error: fetchError } =
+                    await supabase.from("users").select("*").eq("id", user.id);
+
+                  if (fetchError) {
+                    console.error(
+                      "Error checking user in DB:",
+                      fetchError.message
+                    );
+                    return alert("Failed checking existing user");
+                  }
+
+                  // 👇 If user doesn't exist, insert into 'users'
+                  if (existingUsers.length === 0) {
+                    const { error: insertError } = await supabase
+                      .from("users")
+                      .insert([
+                        {
+                          id: user.id,
+                          email: user.email,
+                          full_name: decoded.name,
+                          is_owner: false, // default, or use a modal later
+                        },
+                      ]);
+                    if (insertError) {
+                      console.error("User insert failed:", insertError.message);
+                      return alert("Failed to register user");
+                    }
+                  }
+
+                  // ✅ Now fetch role and redirect
+                  const { data: userInfo, error: roleError } = await supabase
+                    .from("users")
+                    .select("is_owner")
+                    .eq("id", user.id)
+                    .single();
+
+                  if (roleError) {
+                    console.error("Role fetch failed:", roleError.message);
+                    return alert("Something went wrong with role detection");
+                  }
+
+                  navigate(userInfo.is_owner ? "/welcome" : "/eateries");
+                } catch (err) {
+                  console.error("Google login error:", err);
+                  alert("Unexpected error during login");
+                }
+              }}
+              onError={() => {
+                alert("Google Login Failed");
+              }}
+            />
           </div>
 
           <div className="text-center text-sm text-gray-400">
